@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">FlikrRecentImages</string>
+    <string name="flikr_screen_name">Flikr Recent Images</string>
+    
+    <!-- Strings related to login -->
+    <string name="action_start">Start the slideshow</string>
+    <string name="error_no_internet">No Active internet connection was found. Please enable it and re-launch the App</string>
+</resources>
