@@ -8,6 +8,6 @@ import android.graphics.Bitmap;
 
 public interface RefreshImageCallback {
 
-    public void refreshTheImage(Bitmap bitmap);
+    public void refreshTheImage(String url, Bitmap bitmap);
     public void showImageDownloadError(String errorMessage);
 }

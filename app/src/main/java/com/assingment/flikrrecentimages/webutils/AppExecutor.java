@@ -4,13 +4,11 @@ package com.assingment.flikrrecentimages.webutils;
  * Created by suyashg on 03/09/16.
  */
 
-import com.assingment.flikrrecentimages.callback.GetFlickerRecentPhotos;
 import com.assingment.flikrrecentimages.callback.GetURLResponse;
-import com.assingment.flikrrecentimages.callback.RefreshImageCallback;
-import com.assingment.flikrrecentimages.model.Photo;
+import com.assingment.flikrrecentimages.callback.RecentPhotoResponseCallback;
 import com.assingment.flikrrecentimages.model.Response;
+import com.assingment.flikrrecentimages.utils.ServiceType;
 
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -21,8 +19,7 @@ public class AppExecutor implements GetURLResponse {
     private static AppExecutor instance = new AppExecutor();
 
     private ExecutorService executor = Executors.newSingleThreadExecutor();
-    private RefreshImageCallback refreshImageCallback;
-    private GetFlickerRecentPhotos recentPhotosCallback;
+    private RecentPhotoResponseCallback recentPhotoResponseCallback;
     private static final int AWAIT_TEMINATION_INTERVAL = 5;//secs
 
     public static AppExecutor getInstance() {
@@ -32,22 +29,15 @@ public class AppExecutor implements GetURLResponse {
         return instance;
     }
 
-    public void addPhotoRequestToExecutor(RefreshImageCallback refreshImageCallback, List<Photo> photos) {
-        this.refreshImageCallback = refreshImageCallback;
-        for (Photo photo : photos) {
-            this.queueTask(photo.getUrl_n(), true);
-        }
+    public void addPhotoServiceToQueue(String url, boolean isImageDownload, RecentPhotoResponseCallback recentPhotoResponseCallback, Response response) {
+        this.recentPhotoResponseCallback = recentPhotoResponseCallback;
+        this.queueTask(url, isImageDownload, response);
     }
 
-    private void queueTask(String url, boolean isImageDownload){
+    private void queueTask(String url, boolean isImageDownload, Response response){
         executor.submit(() -> {
-            new DefaultClient(url, this, isImageDownload).executeRequest();
+            new DefaultClient(url, this, isImageDownload).executeRequest(response);
         });
-    }
-
-    public void addRecentRequestToExecutor(GetFlickerRecentPhotos recentPhotosCallback, String url) {
-        this.recentPhotosCallback = recentPhotosCallback;
-        this.queueTask(url, false);
     }
 
     private boolean isRunning() {
@@ -56,19 +46,27 @@ public class AppExecutor implements GetURLResponse {
 
     @Override
     public void getResponseofGetURL(Response response) {
-        if (response.isImageResponse()) {
-            refreshImageCallback.refreshTheImage(response.getBitmap());
-        } else {
-            recentPhotosCallback.getRecentImages(response.getFlikerURLResponse());
+        switch (response.getServiceType()) {
+            case RECENT_IMAGE:
+                recentPhotoResponseCallback.handlePhotoServiceResponse(ServiceType.RECENT_IMAGE, response);
+                break;
+            case RECENT_RESPONSE:
+                recentPhotoResponseCallback.handlePhotoServiceResponse(ServiceType.RECENT_RESPONSE, response);
+                break;
+
         }
     }
 
     @Override
     public void errorResposeofGetURL(Exception e, Response response) {
-        if (response.isImageResponse()) {
-            refreshImageCallback.showImageDownloadError(e.getMessage());
-        } else {
-            recentPhotosCallback.showRecentPhotosError(e.getMessage());
+        switch (response.getServiceType()) {
+            case RECENT_IMAGE:
+                recentPhotoResponseCallback.handlePhotoServiceError(ServiceType.RECENT_IMAGE, response, e);
+                break;
+            case RECENT_RESPONSE:
+                recentPhotoResponseCallback.handlePhotoServiceResponse(ServiceType.RECENT_RESPONSE, response);
+                break;
+
         }
     }
 

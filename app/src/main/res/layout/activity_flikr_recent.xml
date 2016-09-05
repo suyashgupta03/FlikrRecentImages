@@ -8,38 +8,20 @@
         style="?android:attr/progressBarStyleSmall"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:layout_centerInParent="true"
+        android:layout_gravity="center"
         android:visibility="visible" />
 
     <LinearLayout
         android:id="@+id/action_form"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/start_executor_service"
-            style="?android:textAppearanceSmall"
+        <ListView
+            android:id="@+id/lv_images"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/action_start"
-            android:textStyle="bold" />
-
-        <ImageView
-            android:id="@+id/imv_image_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:scaleType="center" />
-
-        <TextView
-            android:id="@+id/tv_image_counter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:layout_marginTop="20dp" />
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
     </LinearLayout>
 </FrameLayout>

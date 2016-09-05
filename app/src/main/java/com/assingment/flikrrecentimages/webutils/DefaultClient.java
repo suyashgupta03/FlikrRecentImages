@@ -36,8 +36,8 @@ public class DefaultClient {
         this.isImageDownload = isImageDownload;
     }
 
-    public void executeRequest() {
-        Response response = new Response();
+    public void executeRequest(Response response) {
+        response.setUrl(url);
         response.setImageResponse(isImageDownload);
         HttpURLConnection httpCon = null;
         InputStream inputStream = null;
